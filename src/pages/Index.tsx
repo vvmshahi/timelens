@@ -1,14 +1,15 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import FileUpload from '@/components/FileUpload';
 import TimeSeriesChart from '@/components/TimeSeriesChart';
 import AdvancedInsightsPanel from '@/components/AdvancedInsightsPanel';
+import AIInsights from '@/components/AIInsights';
 import Footer from '@/components/Footer';
 import { parseCSV, generateForecast } from '@/utils/csvParser';
 import { generateAdvancedInsights } from '@/utils/enhancedAnalytics';
+import { useAIInsights } from '@/hooks/useAIInsights';
 import { supabase } from '@/integrations/supabase/client';
-import { RotateCcw, Zap, TrendingUp } from 'lucide-react';
+import { RotateCcw, Zap, TrendingUp, Brain } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface DataPoint {
@@ -28,6 +29,7 @@ const Index = () => {
   const [fileName, setFileName] = useState<string>('');
   const [forecastModel, setForecastModel] = useState<'simple' | 'timegpt'>('simple');
   const { toast } = useToast();
+  const { insights: aiInsights, isLoading: aiLoading, generateInsights } = useAIInsights();
 
   const handleFileUpload = async (file: File) => {
     setIsProcessing(true);
@@ -62,9 +64,20 @@ const Index = () => {
       const enhancedInsights = generateAdvancedInsights(parsedData);
       setInsights(enhancedInsights);
 
+      // Generate GPT-powered insights
+      await generateInsights(parsedData, {
+        mean: enhancedInsights.statisticalAnalysis.mean,
+        median: enhancedInsights.statisticalAnalysis.median,
+        standardDeviation: enhancedInsights.statisticalAnalysis.standardDeviation,
+        variance: enhancedInsights.statisticalAnalysis.variance,
+        trend: enhancedInsights.patterns.trendDirection,
+        volatility: enhancedInsights.patterns.volatility,
+        outliers: enhancedInsights.dataQuality.outliers,
+      });
+
       toast({
         title: "Analysis Complete",
-        description: `Successfully analyzed ${parsedData.length} data points with enhanced insights.`,
+        description: `Successfully analyzed ${parsedData.length} data points with AI-powered insights.`,
       });
       
     } catch (error) {
@@ -168,6 +181,12 @@ const Index = () => {
                     TimeGPT Enhanced
                   </span>
                 )}
+                {aiInsights && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full">
+                    <Brain className="h-3 w-3" />
+                    AI Powered
+                  </span>
+                )}
               </div>
               <div className="flex gap-2">
                 {forecastModel === 'simple' && (
@@ -201,7 +220,17 @@ const Index = () => {
               showConfidenceIntervals={forecastModel === 'timegpt'}
             />
 
-            {/* Enhanced AI Insights */}
+            {/* AI-Powered Insights */}
+            {aiInsights && (
+              <AIInsights
+                summary={aiInsights.summary}
+                trend={aiInsights.trend}
+                recommendation={aiInsights.recommendation}
+                isLoading={aiLoading}
+              />
+            )}
+
+            {/* Enhanced Analytics */}
             {insights && (
               <AdvancedInsightsPanel insights={insights} />
             )}
