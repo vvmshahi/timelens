@@ -3,16 +3,22 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import FileUpload from '@/components/FileUpload';
 import TimeSeriesChart from '@/components/TimeSeriesChart';
-import AIInsights from '@/components/AIInsights';
+import AdvancedInsightsPanel from '@/components/AdvancedInsightsPanel';
 import Footer from '@/components/Footer';
 import { parseCSV, generateForecast } from '@/utils/csvParser';
-import { generateAIInsights } from '@/utils/aiInsights';
-import { RotateCcw } from 'lucide-react';
+import { generateAdvancedInsights } from '@/utils/enhancedAnalytics';
+import { supabase } from '@/integrations/supabase/client';
+import { RotateCcw, Zap, TrendingUp } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface DataPoint {
   date: string;
   value: number;
   forecast?: number;
+  lower_80?: number;
+  upper_80?: number;
+  lower_95?: number;
+  upper_95?: number;
 }
 
 const Index = () => {
@@ -20,6 +26,8 @@ const Index = () => {
   const [insights, setInsights] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [fileName, setFileName] = useState<string>('');
+  const [forecastModel, setForecastModel] = useState<'simple' | 'timegpt'>('simple');
+  const { toast } = useToast();
 
   const handleFileUpload = async (file: File) => {
     setIsProcessing(true);
@@ -30,12 +38,16 @@ const Index = () => {
       const parsedData = parseCSV(text);
       
       if (parsedData.length === 0) {
-        alert('No valid data found in the CSV file. Please ensure it has date and value columns.');
+        toast({
+          title: "Invalid Data",
+          description: "No valid data found in the CSV file. Please ensure it has date and value columns.",
+          variant: "destructive",
+        });
         setIsProcessing(false);
         return;
       }
 
-      // Generate forecast
+      // Generate simple forecast first
       const forecastData = generateForecast(parsedData, 7);
       
       // Combine historical and forecast data
@@ -46,13 +58,71 @@ const Index = () => {
 
       setData(combinedData);
 
-      // Generate AI insights
-      const aiInsights = generateAIInsights(parsedData);
-      setInsights(aiInsights);
+      // Generate enhanced AI insights
+      const enhancedInsights = generateAdvancedInsights(parsedData);
+      setInsights(enhancedInsights);
+
+      toast({
+        title: "Analysis Complete",
+        description: `Successfully analyzed ${parsedData.length} data points with enhanced insights.`,
+      });
       
     } catch (error) {
       console.error('Error processing file:', error);
-      alert('Error processing the file. Please check the format and try again.');
+      toast({
+        title: "Processing Error",
+        description: "Error processing the file. Please check the format and try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const generateTimeGPTForecast = async () => {
+    if (data.length === 0) return;
+
+    setIsProcessing(true);
+    try {
+      const historicalData = data.filter(d => d.value !== undefined);
+      
+      const { data: forecastResult, error } = await supabase.functions.invoke('nixtla-forecast', {
+        body: {
+          data: historicalData,
+          forecastHorizon: 7,
+        },
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (!forecastResult.success) {
+        throw new Error(forecastResult.error);
+      }
+
+      // Combine historical data with TimeGPT forecast
+      const historicalOnly = data.filter(d => d.value !== undefined);
+      const combinedData: DataPoint[] = [
+        ...historicalOnly,
+        ...forecastResult.forecast
+      ];
+
+      setData(combinedData);
+      setForecastModel('timegpt');
+
+      toast({
+        title: "TimeGPT Forecast Generated",
+        description: "Professional-grade forecast with confidence intervals has been generated.",
+      });
+
+    } catch (error) {
+      console.error('Error generating TimeGPT forecast:', error);
+      toast({
+        title: "Forecast Error",
+        description: `Failed to generate TimeGPT forecast: ${error.message}`,
+        variant: "destructive",
+      });
     } finally {
       setIsProcessing(false);
     }
@@ -62,6 +132,7 @@ const Index = () => {
     setData([]);
     setInsights(null);
     setFileName('');
+    setForecastModel('simple');
   };
 
   return (
@@ -73,7 +144,7 @@ const Index = () => {
             Time<span className="text-primary">Lens</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Your data, future-ready. Upload a CSV and get instant trend insights and projections.
+            Professional time series analysis with AI-powered insights and advanced forecasting.
           </p>
         </div>
 
@@ -84,39 +155,55 @@ const Index = () => {
           </div>
         ) : (
           <div className="space-y-8">
-            {/* File Info and Reset */}
+            {/* File Info and Controls */}
             <div className="flex items-center justify-between bg-white rounded-lg shadow-sm p-4">
               <div className="flex items-center space-x-3">
                 <div className="h-3 w-3 bg-green-500 rounded-full"></div>
                 <span className="text-sm text-gray-600">
                   File processed: <span className="font-medium">{fileName}</span>
                 </span>
+                {forecastModel === 'timegpt' && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-purple-700 bg-purple-100 rounded-full">
+                    <Zap className="h-3 w-3" />
+                    TimeGPT Enhanced
+                  </span>
+                )}
               </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleReset}
-                className="flex items-center gap-2"
-              >
-                <RotateCcw className="h-4 w-4" />
-                Upload Another Dataset
-              </Button>
+              <div className="flex gap-2">
+                {forecastModel === 'simple' && (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={generateTimeGPTForecast}
+                    disabled={isProcessing}
+                    className="flex items-center gap-2"
+                  >
+                    <TrendingUp className="h-4 w-4" />
+                    {isProcessing ? 'Generating...' : 'Upgrade to TimeGPT'}
+                  </Button>
+                )}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleReset}
+                  className="flex items-center gap-2"
+                >
+                  <RotateCcw className="h-4 w-4" />
+                  Upload Another Dataset
+                </Button>
+              </div>
             </div>
 
             {/* Chart */}
             <TimeSeriesChart 
               data={data} 
-              title="Historical Data & 7-Day Forecast"
+              title={`Historical Data & 7-Day Forecast ${forecastModel === 'timegpt' ? '(TimeGPT Enhanced)' : ''}`}
+              showConfidenceIntervals={forecastModel === 'timegpt'}
             />
 
-            {/* AI Insights */}
+            {/* Enhanced AI Insights */}
             {insights && (
-              <AIInsights
-                summary={insights.summary}
-                trend={insights.trend}
-                recommendation={insights.recommendation}
-                isLoading={isProcessing}
-              />
+              <AdvancedInsightsPanel insights={insights} />
             )}
           </div>
         )}
