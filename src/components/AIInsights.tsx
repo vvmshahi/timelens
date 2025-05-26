@@ -38,6 +38,11 @@ const AIInsights: React.FC<AIInsightsProps> = ({
     );
   }
 
+  // Safety checks to ensure all props are strings
+  const safeSummary = typeof summary === 'string' ? summary : 'Analysis summary not available.';
+  const safeTrend = typeof trend === 'string' ? trend : 'Trend analysis not available.';
+  const safeRecommendation = typeof recommendation === 'string' ? recommendation : 'Recommendations not available.';
+
   return (
     <div className="space-y-4">
       <Card className="shadow-lg border-l-4 border-l-primary">
@@ -53,7 +58,7 @@ const AIInsights: React.FC<AIInsightsProps> = ({
               <TrendingUp className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
               <div>
                 <h4 className="font-medium text-gray-900 mb-1">Data Summary</h4>
-                <p className="text-gray-700 text-sm leading-relaxed">{summary}</p>
+                <p className="text-gray-700 text-sm leading-relaxed">{safeSummary}</p>
               </div>
             </div>
             
@@ -61,7 +66,7 @@ const AIInsights: React.FC<AIInsightsProps> = ({
               <AlertCircle className="h-5 w-5 text-orange-500 mt-0.5 flex-shrink-0" />
               <div>
                 <h4 className="font-medium text-gray-900 mb-1">Trend Analysis</h4>
-                <p className="text-gray-700 text-sm leading-relaxed">{trend}</p>
+                <p className="text-gray-700 text-sm leading-relaxed">{safeTrend}</p>
               </div>
             </div>
             
@@ -69,7 +74,7 @@ const AIInsights: React.FC<AIInsightsProps> = ({
               <Lightbulb className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
               <div>
                 <h4 className="font-medium text-green-900 mb-1">Actionable Insight</h4>
-                <p className="text-green-800 text-sm leading-relaxed">{recommendation}</p>
+                <p className="text-green-800 text-sm leading-relaxed">{safeRecommendation}</p>
               </div>
             </div>
           </div>

@@ -64,7 +64,7 @@ Time series dataset with ${data.length} data points:
         messages: [
           {
             role: 'system',
-            content: `You are an expert data analyst specializing in time series analysis. Provide clear, actionable insights in JSON format with three sections: "summary" (2-3 sentences explaining what the data shows), "trend" (detailed trend analysis), and "recommendation" (specific actionable advice). Be concise but insightful.`
+            content: `You are an expert data analyst specializing in time series analysis. Provide clear, actionable insights in JSON format with three sections: "summary" (2-3 sentences explaining what the data shows), "trend" (detailed trend analysis), and "recommendation" (specific actionable advice). Be concise but insightful. IMPORTANT: Each field must be a simple string, not an object or array.`
           },
           {
             role: 'user',
@@ -83,18 +83,38 @@ Time series dataset with ${data.length} data points:
     }
 
     const result = await response.json();
-    const insights = JSON.parse(result.choices[0].message.content);
+    let insights;
+    
+    try {
+      insights = JSON.parse(result.choices[0].message.content);
+    } catch (parseError) {
+      console.error('Failed to parse AI response:', parseError);
+      insights = {
+        summary: "Analysis completed successfully.",
+        trend: "Trend analysis available.",
+        recommendation: "Recommendations generated."
+      };
+    }
 
-    console.log('Generated AI insights:', insights);
+    // Ensure all values are strings and not objects
+    const safeInsights = {
+      summary: typeof insights.summary === 'string' ? insights.summary : 
+               typeof insights.summary === 'object' ? JSON.stringify(insights.summary) : 
+               "Analysis completed successfully.",
+      trend: typeof insights.trend === 'string' ? insights.trend : 
+             typeof insights.trend === 'object' ? JSON.stringify(insights.trend) : 
+             "Trend analysis available.",
+      recommendation: typeof insights.recommendation === 'string' ? insights.recommendation : 
+                     typeof insights.recommendation === 'object' ? JSON.stringify(insights.recommendation) : 
+                     "Recommendations generated."
+    };
+
+    console.log('Generated AI insights:', safeInsights);
 
     return new Response(
       JSON.stringify({
         success: true,
-        insights: {
-          summary: insights.summary || "Analysis completed successfully.",
-          trend: insights.trend || "Trend analysis available.",
-          recommendation: insights.recommendation || "Recommendations generated."
-        }
+        insights: safeInsights
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
