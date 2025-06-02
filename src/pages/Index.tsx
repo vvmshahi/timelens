@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import FileUpload from '@/components/FileUpload';
@@ -9,7 +10,7 @@ import { parseCSV, generateForecast } from '@/utils/csvParser';
 import { generateAdvancedInsights } from '@/utils/enhancedAnalytics';
 import { useAIInsights } from '@/hooks/useAIInsights';
 import { supabase } from '@/integrations/supabase/client';
-import { RotateCcw, Zap, TrendingUp, Brain } from 'lucide-react';
+import { RotateCcw, Zap, TrendingUp, Brain, BarChart3, Shield, Globe } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface DataPoint {
@@ -149,78 +150,149 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-gray-900 mb-4 font-inter">
-            Time<span className="text-primary">Lens</span>
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Professional time series analysis with AI-powered insights and advanced forecasting.
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="relative max-w-7xl mx-auto px-6 py-24">
+          <div className="text-center">
+            <div className="flex justify-center items-center gap-3 mb-8">
+              <div className="p-3 bg-blue-600 rounded-xl">
+                <BarChart3 className="h-8 w-8 text-white" />
+              </div>
+              <h1 className="text-6xl font-bold text-white">
+                Time<span className="text-blue-400">Lens</span>
+              </h1>
+            </div>
+            
+            <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed mb-12">
+              Transform your time series data into actionable business intelligence with 
+              enterprise-grade AI analytics and forecasting capabilities
+            </p>
+            
+            {/* Trust Indicators */}
+            <div className="flex justify-center items-center gap-8 text-blue-200 text-sm">
+              <div className="flex items-center gap-2">
+                <Shield className="h-4 w-4" />
+                <span>Enterprise Security</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Brain className="h-4 w-4" />
+                <span>AI-Powered</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Globe className="h-4 w-4" />
+                <span>Global Scale</span>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
 
-        {/* Main Content */}
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-6 py-16">
         {data.length === 0 ? (
-          <div className="flex justify-center">
+          <div className="max-w-2xl mx-auto">
+            {/* Upload Section */}
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-slate-900 mb-4">
+                Get Started with Your Data Analysis
+              </h2>
+              <p className="text-lg text-slate-600">
+                Upload your CSV file to unlock powerful insights and forecasting capabilities
+              </p>
+            </div>
             <FileUpload onFileUpload={handleFileUpload} isLoading={isProcessing} />
+            
+            {/* Features Preview */}
+            <div className="grid md:grid-cols-3 gap-6 mt-16">
+              <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-slate-200">
+                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <TrendingUp className="h-6 w-6 text-blue-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-slate-900 mb-2">Advanced Analytics</h3>
+                <p className="text-slate-600 text-sm">Statistical analysis with trend detection and pattern recognition</p>
+              </div>
+              
+              <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-slate-200">
+                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Zap className="h-6 w-6 text-purple-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-slate-900 mb-2">TimeGPT Forecasting</h3>
+                <p className="text-slate-600 text-sm">Professional-grade forecasting with confidence intervals</p>
+              </div>
+              
+              <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-slate-200">
+                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Brain className="h-6 w-6 text-green-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-slate-900 mb-2">AI Insights</h3>
+                <p className="text-slate-600 text-sm">Natural language insights and actionable recommendations</p>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="space-y-8">
-            {/* File Info and Controls */}
-            <div className="flex items-center justify-between bg-white rounded-lg shadow-sm p-4">
-              <div className="flex items-center space-x-3">
-                <div className="h-3 w-3 bg-green-500 rounded-full"></div>
-                <span className="text-sm text-gray-600">
-                  File processed: <span className="font-medium">{fileName}</span>
-                </span>
-                {forecastModel === 'timegpt' && (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-purple-700 bg-purple-100 rounded-full">
-                    <Zap className="h-3 w-3" />
-                    TimeGPT Enhanced
-                  </span>
-                )}
-                {aiInsights && (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full">
-                    <Brain className="h-3 w-3" />
-                    AI Powered
-                  </span>
-                )}
-              </div>
-              <div className="flex gap-2">
-                {forecastModel === 'simple' && (
+            {/* Results Header */}
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-900">Analysis Complete</h3>
+                    <p className="text-slate-600">
+                      Processing <span className="font-medium text-slate-900">{fileName}</span>
+                    </p>
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    {forecastModel === 'timegpt' && (
+                      <span className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-purple-700 bg-purple-100 rounded-full">
+                        <Zap className="h-3 w-3" />
+                        TimeGPT Enhanced
+                      </span>
+                    )}
+                    {aiInsights && (
+                      <span className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full">
+                        <Brain className="h-3 w-3" />
+                        AI Powered
+                      </span>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="flex gap-3">
+                  {forecastModel === 'simple' && (
+                    <Button 
+                      variant="outline" 
+                      onClick={generateTimeGPTForecast}
+                      disabled={isProcessing}
+                      className="bg-gradient-to-r from-purple-600 to-blue-600 text-white border-0 hover:from-purple-700 hover:to-blue-700"
+                    >
+                      <TrendingUp className="h-4 w-4 mr-2" />
+                      {isProcessing ? 'Generating...' : 'Upgrade to TimeGPT'}
+                    </Button>
+                  )}
                   <Button 
                     variant="outline" 
-                    size="sm" 
-                    onClick={generateTimeGPTForecast}
-                    disabled={isProcessing}
-                    className="flex items-center gap-2"
+                    onClick={handleReset}
+                    className="border-slate-300 hover:bg-slate-50"
                   >
-                    <TrendingUp className="h-4 w-4" />
-                    {isProcessing ? 'Generating...' : 'Upgrade to TimeGPT'}
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                    New Analysis
                   </Button>
-                )}
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={handleReset}
-                  className="flex items-center gap-2"
-                >
-                  <RotateCcw className="h-4 w-4" />
-                  Upload Another Dataset
-                </Button>
+                </div>
               </div>
             </div>
 
-            {/* Chart */}
+            {/* Chart Section */}
             <TimeSeriesChart 
               data={data} 
-              title={`Historical Data & 7-Day Forecast ${forecastModel === 'timegpt' ? '(TimeGPT Enhanced)' : ''}`}
+              title={`Time Series Analysis & Forecast ${forecastModel === 'timegpt' ? '(TimeGPT Enhanced)' : ''}`}
               showConfidenceIntervals={forecastModel === 'timegpt'}
             />
 
-            {/* AI-Powered Insights */}
+            {/* AI Insights */}
             {aiInsights && (
               <AIInsights
                 summary={aiInsights.summary}
@@ -230,7 +302,7 @@ const Index = () => {
               />
             )}
 
-            {/* Enhanced Analytics */}
+            {/* Advanced Analytics */}
             {insights && (
               <AdvancedInsightsPanel insights={insights} />
             )}
