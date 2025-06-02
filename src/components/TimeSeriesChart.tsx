@@ -31,21 +31,22 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3">
-          <p className="font-medium">{`Date: ${formatDate(label)}`}</p>
+        <div className="card-pulse p-4 min-w-[200px]">
+          <p className="font-semibold text-gray-900 mb-2">{`Date: ${formatDate(label)}`}</p>
           {payload.map((entry: any, index: number) => {
             if (entry.dataKey === 'lower_80' || entry.dataKey === 'upper_80' || 
                 entry.dataKey === 'lower_95' || entry.dataKey === 'upper_95') {
-              return null; // Don't show confidence interval values in tooltip
+              return null;
             }
             return (
-              <p key={index} style={{ color: entry.color }} className="text-sm">
+              <p key={index} style={{ color: entry.color }} className="text-sm font-medium">
                 {entry.dataKey === 'value' ? 'Historical' : 'Forecast'}: {entry.value?.toFixed(2)}
               </p>
             );
           })}
           {showConfidenceIntervals && payload.find((p: any) => p.dataKey === 'upper_80') && (
-            <div className="text-xs text-gray-500 mt-1">
+            <div className="text-xs text-gray-500 mt-2 space-y-1">
+              <p className="font-medium">Confidence Intervals:</p>
               <p>80% CI: {payload.find((p: any) => p.dataKey === 'lower_80')?.value?.toFixed(2)} - {payload.find((p: any) => p.dataKey === 'upper_80')?.value?.toFixed(2)}</p>
               <p>95% CI: {payload.find((p: any) => p.dataKey === 'lower_95')?.value?.toFixed(2)} - {payload.find((p: any) => p.dataKey === 'upper_95')?.value?.toFixed(2)}</p>
             </div>
@@ -57,22 +58,22 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 w-full">
-      <h3 className="text-xl font-semibold text-gray-900 mb-4">{title}</h3>
+    <div className="card-pulse p-8 w-full">
+      <h3 className="text-2xl font-bold text-gray-900 mb-6">{title}</h3>
       <div className="h-96">
         <ResponsiveContainer width="100%" height="100%">
           {showConfidenceIntervals ? (
             <ComposedChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
               <XAxis 
                 dataKey="date" 
                 tickFormatter={formatDate}
-                tick={{ fontSize: 12 }}
-                stroke="#666"
+                tick={{ fontSize: 12, fill: '#64748b' }}
+                axisLine={{ stroke: '#e2e8f0' }}
               />
               <YAxis 
-                tick={{ fontSize: 12 }}
-                stroke="#666"
+                tick={{ fontSize: 12, fill: '#64748b' }}
+                axisLine={{ stroke: '#e2e8f0' }}
               />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
@@ -83,7 +84,7 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
                 dataKey="upper_95"
                 stackId="1"
                 stroke="none"
-                fill="#E5E7EB"
+                fill="#FED7D7"
                 fillOpacity={0.3}
                 connectNulls={false}
               />
@@ -103,7 +104,7 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
                 dataKey="upper_80"
                 stackId="2"
                 stroke="none"
-                fill="#D1D5DB"
+                fill="#FEB2B2"
                 fillOpacity={0.4}
                 connectNulls={false}
               />
@@ -120,54 +121,54 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
               <Line 
                 type="monotone" 
                 dataKey="value" 
-                stroke="#3B82F6" 
-                strokeWidth={2}
-                dot={{ fill: '#3B82F6', strokeWidth: 0, r: 3 }}
+                stroke="#F97316" 
+                strokeWidth={3}
+                dot={{ fill: '#F97316', strokeWidth: 0, r: 4 }}
                 name="Historical Data"
                 connectNulls={false}
               />
               <Line 
                 type="monotone" 
                 dataKey="forecast" 
-                stroke="#10B981" 
-                strokeWidth={2}
-                strokeDasharray="5 5"
-                dot={{ fill: '#10B981', strokeWidth: 0, r: 3 }}
+                stroke="#6366F1" 
+                strokeWidth={3}
+                strokeDasharray="8 8"
+                dot={{ fill: '#6366F1', strokeWidth: 0, r: 4 }}
                 name="TimeGPT Forecast"
                 connectNulls={false}
               />
             </ComposedChart>
           ) : (
             <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
               <XAxis 
                 dataKey="date" 
                 tickFormatter={formatDate}
-                tick={{ fontSize: 12 }}
-                stroke="#666"
+                tick={{ fontSize: 12, fill: '#64748b' }}
+                axisLine={{ stroke: '#e2e8f0' }}
               />
               <YAxis 
-                tick={{ fontSize: 12 }}
-                stroke="#666"
+                tick={{ fontSize: 12, fill: '#64748b' }}
+                axisLine={{ stroke: '#e2e8f0' }}
               />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
               <Line 
                 type="monotone" 
                 dataKey="value" 
-                stroke="#3B82F6" 
-                strokeWidth={2}
-                dot={{ fill: '#3B82F6', strokeWidth: 0, r: 3 }}
+                stroke="#F97316" 
+                strokeWidth={3}
+                dot={{ fill: '#F97316', strokeWidth: 0, r: 4 }}
                 name="Historical Data"
                 connectNulls={false}
               />
               <Line 
                 type="monotone" 
                 dataKey="forecast" 
-                stroke="#10B981" 
-                strokeWidth={2}
-                strokeDasharray="5 5"
-                dot={{ fill: '#10B981', strokeWidth: 0, r: 3 }}
+                stroke="#6366F1" 
+                strokeWidth={3}
+                strokeDasharray="8 8"
+                dot={{ fill: '#6366F1', strokeWidth: 0, r: 4 }}
                 name="Basic Forecast"
                 connectNulls={false}
               />
