@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
@@ -12,7 +11,7 @@ import { parseCSV, generateForecast } from '@/utils/csvParser';
 import { generateAdvancedInsights } from '@/utils/enhancedAnalytics';
 import { useAIInsights } from '@/hooks/useAIInsights';
 import { supabase } from '@/integrations/supabase/client';
-import { RotateCcw, TrendingUp, Brain, Sparkles } from 'lucide-react';
+import { RotateCcw, Brain, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface DataPoint {
@@ -204,16 +203,6 @@ const Index = () => {
               </div>
               
               <div className="flex gap-3">
-                {forecastModel === 'simple' && (
-                  <Button 
-                    onClick={generateTimeGPTForecast}
-                    disabled={isProcessing}
-                    className="btn-pulse"
-                  >
-                    <TrendingUp className="h-4 w-4 mr-2" />
-                    {isProcessing ? 'Generating...' : 'Upgrade to TimeGPT'}
-                  </Button>
-                )}
                 <Button 
                   variant="outline" 
                   onClick={handleReset}

@@ -121,19 +121,19 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
               <Line 
                 type="monotone" 
                 dataKey="value" 
-                stroke="#F97316" 
+                stroke="#93C5FD" 
                 strokeWidth={3}
-                dot={{ fill: '#F97316', strokeWidth: 0, r: 4 }}
+                dot={{ fill: '#93C5FD', strokeWidth: 0, r: 4 }}
                 name="Historical Data"
                 connectNulls={false}
               />
               <Line 
                 type="monotone" 
                 dataKey="forecast" 
-                stroke="#6366F1" 
+                stroke="#A78BFA" 
                 strokeWidth={3}
                 strokeDasharray="8 8"
-                dot={{ fill: '#6366F1', strokeWidth: 0, r: 4 }}
+                dot={{ fill: '#A78BFA', strokeWidth: 0, r: 4 }}
                 name="TimeGPT Forecast"
                 connectNulls={false}
               />
@@ -156,19 +156,19 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
               <Line 
                 type="monotone" 
                 dataKey="value" 
-                stroke="#F97316" 
+                stroke="#93C5FD" 
                 strokeWidth={3}
-                dot={{ fill: '#F97316', strokeWidth: 0, r: 4 }}
+                dot={{ fill: '#93C5FD', strokeWidth: 0, r: 4 }}
                 name="Historical Data"
                 connectNulls={false}
               />
               <Line 
                 type="monotone" 
                 dataKey="forecast" 
-                stroke="#6366F1" 
+                stroke="#A78BFA" 
                 strokeWidth={3}
                 strokeDasharray="8 8"
-                dot={{ fill: '#6366F1', strokeWidth: 0, r: 4 }}
+                dot={{ fill: '#A78BFA', strokeWidth: 0, r: 4 }}
                 name="Basic Forecast"
                 connectNulls={false}
               />

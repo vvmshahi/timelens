@@ -26,19 +26,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onGetStarted }) => {
           </p>
           
           {/* CTA Button */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+          <div className="flex justify-center items-center mb-16">
             <Button 
               onClick={onGetStarted}
               className="btn-pulse text-lg h-14 px-10 animate-glow"
             >
               <TrendingUp className="h-5 w-5 mr-3" />
               Get Started
-            </Button>
-            <Button 
-              variant="outline" 
-              className="h-14 px-10 text-lg border-gray-300 hover:border-orange-pulse hover:text-orange-pulse"
-            >
-              View Demo
             </Button>
           </div>
 
