@@ -1,33 +1,32 @@
 
 import React from 'react';
-import { TrendingUp, TrendingDown, Activity, AlertTriangle, CheckCircle, BarChart3 } from 'lucide-react';
+import { BarChart3, AlertTriangle, Activity } from 'lucide-react';
+
+interface StatisticalAnalysis {
+  mean: number;
+  median: number;
+  standardDeviation: number;
+  variance: number;
+  skewness: number;
+  kurtosis: number;
+}
+
+interface Patterns {
+  trendDirection: string;
+  volatility: string;
+  seasonality: string;
+}
+
+interface DataQuality {
+  outliers: number[];
+  missingValues: number;
+  dataPoints: number;
+}
 
 interface AdvancedInsights {
-  summary: string;
-  statisticalAnalysis: {
-    mean: number;
-    median: number;
-    standardDeviation: number;
-    variance: number;
-    skewness: number;
-    kurtosis: number;
-    trend: string;
-    seasonality: string;
-    stationarity: string;
-  };
-  dataQuality: {
-    completeness: number;
-    outliers: number;
-    missingValues: number;
-    consistency: string;
-  };
-  patterns: {
-    trendDirection: string;
-    trendStrength: number;
-    volatility: string;
-    cyclicalPatterns: string;
-  };
-  recommendations: string[];
+  statisticalAnalysis: StatisticalAnalysis;
+  patterns: Patterns;
+  dataQuality: DataQuality;
 }
 
 interface AdvancedInsightsPanelProps {
@@ -35,110 +34,115 @@ interface AdvancedInsightsPanelProps {
 }
 
 const AdvancedInsightsPanel: React.FC<AdvancedInsightsPanelProps> = ({ insights }) => {
-  const getTrendIcon = (direction: string) => {
-    switch (direction) {
-      case 'upward':
-        return <TrendingUp className="h-5 w-5 text-green-500" />;
-      case 'downward':
-        return <TrendingDown className="h-5 w-5 text-red-500" />;
-      default:
-        return <Activity className="h-5 w-5 text-blue-500" />;
-    }
-  };
-
-  const getQualityColor = (consistency: string) => {
-    switch (consistency) {
-      case 'high':
-        return 'text-green-600 bg-green-50';
-      case 'moderate':
-        return 'text-yellow-600 bg-yellow-50';
-      default:
-        return 'text-red-600 bg-red-50';
-    }
-  };
-
-  const getVolatilityColor = (volatility: string) => {
-    switch (volatility) {
-      case 'low':
-        return 'text-green-600 bg-green-50';
-      case 'moderate':
-        return 'text-yellow-600 bg-yellow-50';
-      default:
-        return 'text-red-600 bg-red-50';
-    }
-  };
+  const { statisticalAnalysis, patterns, dataQuality } = insights;
 
   return (
-    <div className="space-y-6">
-      {/* Summary Card */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <BarChart3 className="h-6 w-6 text-primary" />
-          <h3 className="text-xl font-semibold text-gray-900">Data Analysis Summary</h3>
-        </div>
-        <p className="text-gray-700 leading-relaxed">{insights.summary}</p>
-      </div>
-
+    <div className="grid gap-6 md:grid-cols-3">
       {/* Statistical Analysis */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h4 className="text-lg font-semibold text-gray-900 mb-4">Statistical Analysis</h4>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center p-3 bg-gray-50 rounded-lg">
-            <div className="text-2xl font-bold text-blue-600">{insights.statisticalAnalysis.mean}</div>
-            <div className="text-sm text-gray-600">Mean</div>
+      <div className="card-pulse p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-gradient-to-r from-[#FF5F6D] to-[#FFC371] rounded-lg">
+            <BarChart3 className="h-5 w-5 text-white" />
           </div>
-          <div className="text-center p-3 bg-gray-50 rounded-lg">
-            <div className="text-2xl font-bold text-blue-600">{insights.statisticalAnalysis.median}</div>
-            <div className="text-sm text-gray-600">Median</div>
-          </div>
-          <div className="text-center p-3 bg-gray-50 rounded-lg">
-            <div className="text-2xl font-bold text-blue-600">{insights.statisticalAnalysis.standardDeviation}</div>
-            <div className="text-sm text-gray-600">Std Dev</div>
-          </div>
-          <div className="text-center p-3 bg-gray-50 rounded-lg">
-            <div className="text-2xl font-bold text-blue-600">{insights.statisticalAnalysis.variance}</div>
-            <div className="text-sm text-gray-600">Variance</div>
-          </div>
+          <h4 className="font-semibold text-gray-900">Statistical Analysis</h4>
         </div>
         
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-            {getTrendIcon(insights.patterns.trendDirection)}
-            <div>
-              <div className="font-medium capitalize">{insights.patterns.trendDirection} Trend</div>
-              <div className="text-sm text-gray-600">Strength: {(insights.patterns.trendStrength * 100).toFixed(1)}%</div>
-            </div>
+        <div className="space-y-3">
+          <div className="flex justify-between">
+            <span className="text-gray-600">Mean:</span>
+            <span className="font-medium">{statisticalAnalysis.mean.toFixed(2)}</span>
           </div>
-          
-          <div className="p-3 bg-gray-50 rounded-lg">
-            <div className={`inline-block px-2 py-1 rounded text-sm font-medium ${getVolatilityColor(insights.patterns.volatility)}`}>
-              {insights.patterns.volatility.toUpperCase()} VOLATILITY
-            </div>
-            <div className="text-sm text-gray-600 mt-1">Market stability indicator</div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Median:</span>
+            <span className="font-medium">{statisticalAnalysis.median.toFixed(2)}</span>
           </div>
-          
-          <div className="p-3 bg-gray-50 rounded-lg">
-            <div className={`inline-block px-2 py-1 rounded text-sm font-medium ${getQualityColor(insights.dataQuality.consistency)}`}>
-              {insights.dataQuality.consistency.toUpperCase()} QUALITY
-            </div>
-            <div className="text-sm text-gray-600 mt-1">{insights.dataQuality.outliers} outliers detected</div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Std Deviation:</span>
+            <span className="font-medium">{statisticalAnalysis.standardDeviation.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Variance:</span>
+            <span className="font-medium">{statisticalAnalysis.variance.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Skewness:</span>
+            <span className="font-medium">{statisticalAnalysis.skewness.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Kurtosis:</span>
+            <span className="font-medium">{statisticalAnalysis.kurtosis.toFixed(2)}</span>
           </div>
         </div>
       </div>
 
-      {/* Recommendations */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <CheckCircle className="h-5 w-5 text-green-500" />
-          Recommendations
-        </h4>
+      {/* Pattern Recognition */}
+      <div className="card-pulse p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-gradient-to-r from-[#FF5F6D] to-[#FFC371] rounded-lg">
+            <Activity className="h-5 w-5 text-white" />
+          </div>
+          <h4 className="font-semibold text-gray-900">Pattern Recognition</h4>
+        </div>
+        
+        <div className="space-y-4">
+          <div>
+            <span className="text-gray-600 text-sm">Trend Direction:</span>
+            <p className="font-medium text-gray-900">{patterns.trendDirection}</p>
+          </div>
+          <div>
+            <span className="text-gray-600 text-sm">Volatility:</span>
+            <p className="font-medium text-gray-900">{patterns.volatility}</p>
+          </div>
+          <div>
+            <span className="text-gray-600 text-sm">Seasonality:</span>
+            <p className="font-medium text-gray-900">{patterns.seasonality}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Data Quality */}
+      <div className="card-pulse p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-gradient-to-r from-[#FF5F6D] to-[#FFC371] rounded-lg">
+            <AlertTriangle className="h-5 w-5 text-white" />
+          </div>
+          <h4 className="font-semibold text-gray-900">Data Quality</h4>
+        </div>
+        
         <div className="space-y-3">
-          {insights.recommendations.map((recommendation, index) => (
-            <div key={index} className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
-              <div className="h-2 w-2 rounded-full bg-blue-500 mt-2 flex-shrink-0"></div>
-              <p className="text-gray-700">{recommendation}</p>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Data Points:</span>
+            <span className="font-medium">{dataQuality.dataPoints}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Missing Values:</span>
+            <span className="font-medium">{dataQuality.missingValues}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Outliers Detected:</span>
+            <span className="font-medium">{dataQuality.outliers.length}</span>
+          </div>
+          
+          {dataQuality.outliers.length > 0 && (
+            <div className="mt-4">
+              <span className="text-gray-600 text-sm">Outlier Values:</span>
+              <div className="mt-1 flex flex-wrap gap-1">
+                {dataQuality.outliers.slice(0, 3).map((outlier, index) => (
+                  <span 
+                    key={index}
+                    className="px-2 py-1 bg-red-100 text-red-700 text-xs rounded"
+                  >
+                    {outlier.toFixed(2)}
+                  </span>
+                ))}
+                {dataQuality.outliers.length > 3 && (
+                  <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
+                    +{dataQuality.outliers.length - 3} more
+                  </span>
+                )}
+              </div>
             </div>
-          ))}
+          )}
         </div>
       </div>
     </div>

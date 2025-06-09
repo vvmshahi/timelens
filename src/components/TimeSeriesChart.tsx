@@ -1,10 +1,21 @@
 
 import React from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, ComposedChart } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Area,
+  ComposedChart,
+} from 'recharts';
+import { TrendingUp } from 'lucide-react';
 
 interface DataPoint {
   date: string;
-  value: number;
+  value?: number;
   forecast?: number;
   lower_80?: number;
   upper_80?: number;
@@ -14,43 +25,33 @@ interface DataPoint {
 
 interface TimeSeriesChartProps {
   data: DataPoint[];
-  title?: string;
+  title: string;
   showConfidenceIntervals?: boolean;
 }
 
 const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({ 
   data, 
-  title = "Time Series Analysis",
+  title, 
   showConfidenceIntervals = false 
 }) => {
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric' 
+    });
   };
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="card-pulse p-4 min-w-[200px]">
-          <p className="font-semibold text-gray-900 mb-2">{`Date: ${formatDate(label)}`}</p>
-          {payload.map((entry: any, index: number) => {
-            if (entry.dataKey === 'lower_80' || entry.dataKey === 'upper_80' || 
-                entry.dataKey === 'lower_95' || entry.dataKey === 'upper_95') {
-              return null;
-            }
-            return (
-              <p key={index} style={{ color: entry.color }} className="text-sm font-medium">
-                {entry.dataKey === 'value' ? 'Historical' : 'Forecast'}: {entry.value?.toFixed(2)}
-              </p>
-            );
-          })}
-          {showConfidenceIntervals && payload.find((p: any) => p.dataKey === 'upper_80') && (
-            <div className="text-xs text-gray-500 mt-2 space-y-1">
-              <p className="font-medium">Confidence Intervals:</p>
-              <p>80% CI: {payload.find((p: any) => p.dataKey === 'lower_80')?.value?.toFixed(2)} - {payload.find((p: any) => p.dataKey === 'upper_80')?.value?.toFixed(2)}</p>
-              <p>95% CI: {payload.find((p: any) => p.dataKey === 'lower_95')?.value?.toFixed(2)} - {payload.find((p: any) => p.dataKey === 'upper_95')?.value?.toFixed(2)}</p>
-            </div>
-          )}
+        <div className="bg-white p-4 border border-gray-200 rounded-lg shadow-lg">
+          <p className="font-medium text-gray-900 mb-2">{formatDate(label)}</p>
+          {payload.map((entry: any, index: number) => (
+            <p key={index} className="text-sm" style={{ color: entry.color }}>
+              {entry.name}: {entry.value?.toFixed(2)}
+            </p>
+          ))}
         </div>
       );
     }
@@ -58,123 +59,135 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
   };
 
   return (
-    <div className="card-pulse p-8 w-full">
-      <h3 className="text-2xl font-bold text-gray-900 mb-6">{title}</h3>
+    <div className="card-pulse p-6">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="p-2 bg-gradient-to-r from-[#FF5F6D] to-[#FFC371] rounded-lg">
+          <TrendingUp className="h-5 w-5 text-white" />
+        </div>
+        <h3 className="text-xl font-bold text-gray-900">{title}</h3>
+      </div>
+
       <div className="h-96">
         <ResponsiveContainer width="100%" height="100%">
           {showConfidenceIntervals ? (
-            <ComposedChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+            <ComposedChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis 
                 dataKey="date" 
                 tickFormatter={formatDate}
-                tick={{ fontSize: 12, fill: '#64748b' }}
-                axisLine={{ stroke: '#e2e8f0' }}
+                stroke="#6b7280"
+                fontSize={12}
               />
-              <YAxis 
-                tick={{ fontSize: 12, fill: '#64748b' }}
-                axisLine={{ stroke: '#e2e8f0' }}
-              />
+              <YAxis stroke="#6b7280" fontSize={12} />
               <Tooltip content={<CustomTooltip />} />
-              <Legend />
               
-              {/* 95% Confidence Interval */}
+              {/* Confidence intervals */}
               <Area
                 type="monotone"
                 dataKey="upper_95"
-                stackId="1"
                 stroke="none"
-                fill="#FED7D7"
+                fill="#e0e7ff"
                 fillOpacity={0.3}
-                connectNulls={false}
               />
               <Area
                 type="monotone"
                 dataKey="lower_95"
-                stackId="1"
                 stroke="none"
-                fill="#FFFFFF"
+                fill="#ffffff"
                 fillOpacity={1}
-                connectNulls={false}
               />
-              
-              {/* 80% Confidence Interval */}
               <Area
                 type="monotone"
                 dataKey="upper_80"
-                stackId="2"
                 stroke="none"
-                fill="#FEB2B2"
-                fillOpacity={0.4}
-                connectNulls={false}
+                fill="#c7d2fe"
+                fillOpacity={0.5}
               />
               <Area
                 type="monotone"
                 dataKey="lower_80"
-                stackId="2"
                 stroke="none"
-                fill="#FFFFFF"
+                fill="#ffffff"
                 fillOpacity={1}
-                connectNulls={false}
               />
               
-              <Line 
-                type="monotone" 
-                dataKey="value" 
-                stroke="#93C5FD" 
-                strokeWidth={3}
-                dot={{ fill: '#93C5FD', strokeWidth: 0, r: 4 }}
+              {/* Actual data line */}
+              <Line
+                type="monotone"
+                dataKey="value"
+                stroke="#60a5fa"
+                strokeWidth={2}
+                dot={false}
                 name="Historical Data"
-                connectNulls={false}
               />
-              <Line 
-                type="monotone" 
-                dataKey="forecast" 
-                stroke="#A78BFA" 
-                strokeWidth={3}
-                strokeDasharray="8 8"
-                dot={{ fill: '#A78BFA', strokeWidth: 0, r: 4 }}
-                name="TimeGPT Forecast"
-                connectNulls={false}
+              
+              {/* Forecast line */}
+              <Line
+                type="monotone"
+                dataKey="forecast"
+                stroke="#a855f7"
+                strokeWidth={2}
+                strokeDasharray="5 5"
+                dot={false}
+                name="Forecast"
               />
             </ComposedChart>
           ) : (
-            <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+            <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis 
                 dataKey="date" 
                 tickFormatter={formatDate}
-                tick={{ fontSize: 12, fill: '#64748b' }}
-                axisLine={{ stroke: '#e2e8f0' }}
+                stroke="#6b7280"
+                fontSize={12}
               />
-              <YAxis 
-                tick={{ fontSize: 12, fill: '#64748b' }}
-                axisLine={{ stroke: '#e2e8f0' }}
-              />
+              <YAxis stroke="#6b7280" fontSize={12} />
               <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Line 
-                type="monotone" 
-                dataKey="value" 
-                stroke="#93C5FD" 
-                strokeWidth={3}
-                dot={{ fill: '#93C5FD', strokeWidth: 0, r: 4 }}
+              
+              <Line
+                type="monotone"
+                dataKey="value"
+                stroke="#60a5fa"
+                strokeWidth={2.5}
+                dot={false}
                 name="Historical Data"
-                connectNulls={false}
               />
-              <Line 
-                type="monotone" 
-                dataKey="forecast" 
-                stroke="#A78BFA" 
-                strokeWidth={3}
-                strokeDasharray="8 8"
-                dot={{ fill: '#A78BFA', strokeWidth: 0, r: 4 }}
-                name="Basic Forecast"
-                connectNulls={false}
+              
+              <Line
+                type="monotone"
+                dataKey="forecast"
+                stroke="#a855f7"
+                strokeWidth={2.5}
+                strokeDasharray="5 5"
+                dot={false}
+                name="Forecast"
               />
             </LineChart>
           )}
         </ResponsiveContainer>
+      </div>
+      
+      <div className="mt-4 flex items-center gap-6 text-sm text-gray-600">
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-0.5 bg-blue-400"></div>
+          <span>Historical Data</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-0.5 bg-purple-500 border-dashed"></div>
+          <span>Forecast</span>
+        </div>
+        {showConfidenceIntervals && (
+          <>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-2 bg-indigo-200 opacity-50"></div>
+              <span>80% Confidence</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-2 bg-indigo-100 opacity-30"></div>
+              <span>95% Confidence</span>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
