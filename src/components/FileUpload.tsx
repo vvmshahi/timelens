@@ -1,5 +1,5 @@
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Upload, FileText, AlertCircle } from 'lucide-react';
 
@@ -11,6 +11,7 @@ interface FileUploadProps {
 const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, isLoading }) => {
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string>('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validateFile = (file: File): boolean => {
     if (!file.name.endsWith('.csv')) {
@@ -57,10 +58,22 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, isLoading }) => {
     }
   };
 
+  const handleButtonClick = () => {
+    if (fileInputRef.current && !isLoading) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleDragAreaClick = () => {
+    if (fileInputRef.current && !isLoading) {
+      fileInputRef.current.click();
+    }
+  };
+
   return (
     <div className="max-w-2xl mx-auto">
       <div
-        className={`card-pulse p-8 border-2 border-dashed transition-all duration-200 ${
+        className={`card-pulse p-8 border-2 border-dashed transition-all duration-200 cursor-pointer ${
           dragActive 
             ? 'border-orange-pulse bg-orange-50' 
             : 'border-gray-200 hover:border-orange-pulse'
@@ -69,6 +82,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, isLoading }) => {
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
         onDrop={handleDrop}
+        onClick={handleDragAreaClick}
       >
         <div className="text-center">
           <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-[#FF5F6D] to-[#FFC371] rounded-full flex items-center justify-center">
@@ -85,33 +99,32 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, isLoading }) => {
           
           <div className="space-y-4">
             <input
+              ref={fileInputRef}
               type="file"
               accept=".csv"
               onChange={handleFileSelect}
               className="hidden"
-              id="csv-upload"
               disabled={isLoading}
             />
             
-            <label htmlFor="csv-upload">
-              <Button
-                type="button"
-                className="hero-cta"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <FileText className="h-4 w-4 mr-2" />
-                    Choose CSV File
-                  </>
-                )}
-              </Button>
-            </label>
+            <Button
+              type="button"
+              onClick={handleButtonClick}
+              className="hero-cta"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <FileText className="h-4 w-4 mr-2" />
+                  Choose CSV File
+                </>
+              )}
+            </Button>
           </div>
           
           {error && (
