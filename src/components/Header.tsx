@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { BarChart3, Github, Linkedin } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Header: React.FC = () => {
   return (
@@ -8,31 +9,31 @@ const Header: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-3">
             <div className="p-2 bg-gradient-to-r from-[#FF5F6D] to-[#FFA726] rounded-lg">
               <BarChart3 className="h-6 w-6 text-white" />
             </div>
             <h1 className="text-2xl font-bold">
               Time<span className="text-orange-pulse">Lens</span>
             </h1>
-          </div>
+          </Link>
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            <a 
-              href="#" 
+            <Link 
+              to="/" 
               className="text-gray-700 hover:text-orange-pulse transition-colors duration-200 font-medium"
             >
               Home
-            </a>
-            <a 
-              href="#" 
+            </Link>
+            <Link 
+              to="/about" 
               className="text-gray-700 hover:text-orange-pulse transition-colors duration-200 font-medium"
             >
               About
-            </a>
+            </Link>
             <a 
-              href="https://github.com" 
+              href="https://github.com/vvmshahi" 
               target="_blank" 
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-gray-700 hover:text-orange-pulse transition-colors duration-200 font-medium"
@@ -41,7 +42,7 @@ const Header: React.FC = () => {
               GitHub
             </a>
             <a 
-              href="https://linkedin.com" 
+              href="https://www.linkedin.com/in/vvmshahin" 
               target="_blank" 
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-gray-700 hover:text-orange-pulse transition-colors duration-200 font-medium"

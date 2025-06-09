@@ -59,18 +59,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onGetStarted }) => {
           >
             Get Started - Upload Your Data
           </Button>
-          
-          {/* Trust Indicators */}
-          <div className="mt-16 text-center">
-            <p className="text-sm text-gray-500 mb-6">Trusted by data teams worldwide</p>
-            <div className="flex justify-center items-center gap-8 opacity-60">
-              <div className="text-2xl font-bold text-gray-400">TimeGPT</div>
-              <div className="w-px h-6 bg-gray-300"></div>
-              <div className="text-2xl font-bold text-gray-400">OpenAI</div>
-              <div className="w-px h-6 bg-gray-300"></div>
-              <div className="text-2xl font-bold text-gray-400">Supabase</div>
-            </div>
-          </div>
         </div>
       </div>
     </section>

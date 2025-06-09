@@ -10,9 +10,16 @@ const Footer: React.FC = () => {
           <p className="text-gray-600 text-lg leading-relaxed">
             Part of the <span className="text-pulse-gradient font-semibold">AI Intelligence Suite</span> · 
             Built with AI <Heart className="inline h-4 w-4 text-red-500 mx-1" /> by{' '}
-            <span className="text-orange-pulse font-semibold">Shahin</span> · 
             <a 
-              href="https://github.com" 
+              href="https://www.shahin.studio/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-orange-pulse font-semibold hover:text-[#FF5F6D] transition-colors duration-200"
+            >
+              Shahin
+            </a> · 
+            <a 
+              href="https://github.com/vvmshahi" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-orange-pulse hover:text-[#FF5F6D] transition-colors duration-200 mx-2 font-medium"
@@ -21,7 +28,7 @@ const Footer: React.FC = () => {
             </a>
             |
             <a 
-              href="https://linkedin.com" 
+              href="https://www.linkedin.com/in/vvmshahin" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-orange-pulse hover:text-[#FF5F6D] transition-colors duration-200 mx-2 font-medium"
@@ -32,7 +39,7 @@ const Footer: React.FC = () => {
           
           <div className="flex justify-center items-center gap-4 mt-6">
             <a 
-              href="https://github.com" 
+              href="https://github.com/vvmshahi" 
               target="_blank" 
               rel="noopener noreferrer"
               className="w-10 h-10 bg-gray-100 hover:bg-orange-100 rounded-lg flex items-center justify-center transition-colors duration-200 group"
@@ -40,7 +47,7 @@ const Footer: React.FC = () => {
               <Github className="h-5 w-5 text-gray-600 group-hover:text-orange-pulse" />
             </a>
             <a 
-              href="https://linkedin.com" 
+              href="https://www.linkedin.com/in/vvmshahin" 
               target="_blank" 
               rel="noopener noreferrer"
               className="w-10 h-10 bg-gray-100 hover:bg-orange-100 rounded-lg flex items-center justify-center transition-colors duration-200 group"
