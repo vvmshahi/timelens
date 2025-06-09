@@ -17,23 +17,6 @@ const Footer: React.FC = () => {
               className="text-orange-pulse font-semibold hover:text-[#FF5F6D] transition-colors duration-200"
             >
               Shahin
-            </a> · 
-            <a 
-              href="https://github.com/vvmshahi" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-orange-pulse hover:text-[#FF5F6D] transition-colors duration-200 mx-2 font-medium"
-            >
-              GitHub
-            </a>
-            |
-            <a 
-              href="https://www.linkedin.com/in/vvmshahin" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-orange-pulse hover:text-[#FF5F6D] transition-colors duration-200 mx-2 font-medium"
-            >
-              LinkedIn
             </a>
           </p>
           
